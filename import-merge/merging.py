@@ -14,17 +14,17 @@ def clean_name(name):
 # Cleaning name and email data
 salesforce_df = salesforce_df.drop_duplicates(subset=["Applicant Contact: 18-Digit Account ID"]).copy()
 salesforce_df["Cleaned Name"] = salesforce_df["Last Name"].apply(clean_name) + " " + salesforce_df["First Name"].apply(clean_name)
-salesforce_df["Cleaned Email (SF)"] = salesforce_df["Applicant Contact: Email"].str.lower().str.strip()
-outcome_tracker_df["Cleaned Email (OT)"] = outcome_tracker_df["Email Address"].str.lower().str.strip()
+salesforce_df["Cleaned Email"] = salesforce_df["Applicant Contact: Email"].str.lower().str.strip()
+outcome_tracker_df["Cleaned Email"] = outcome_tracker_df["Email Address"].str.lower().str.strip()
 
 # Search through emails
 print("Searching through emails...")
 
 # Matching email to names
 empty_emails = ["xxxx@yahoo.com", "xxxx@gmail.com"]
-sf_email_available = salesforce_df[~salesforce_df["Cleaned Email (SF)"].isin(empty_emails)]
-sf_email_to_name = sf_email_available.drop_duplicates(subset=["Cleaned Email (SF)"]).set_index("Cleaned Email (SF)")["Cleaned Name"]
-outcome_tracker_df["Matched Name (Email)"] = outcome_tracker_df["Cleaned Email (OT)"].map(sf_email_to_name)
+sf_email_available = salesforce_df[~salesforce_df["Cleaned Email"].isin(empty_emails)]
+sf_email_to_name = sf_email_available.drop_duplicates(subset=["Cleaned Email"]).set_index("Cleaned Email")["Cleaned Name"]
+outcome_tracker_df["Matched Name (Email)"] = outcome_tracker_df["Cleaned Email"].map(sf_email_to_name)
 
 # Search through names
 print("Searching through names...")

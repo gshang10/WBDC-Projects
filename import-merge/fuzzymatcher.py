@@ -26,14 +26,14 @@ def find_best_match(ot_full_name, sf_names_check):
     if not ot_cleaned_name:
         return None, 0
     match, score = process.extractOne(ot_cleaned_name, sf_names_check, scorer = fuzz.token_sort_ratio)
-    if score >= 95:
+    if score > 90:
         return match, score
     else:
         return None, 0
 
 # Matches every name in Outcome Tracker with the list of names in Salesforce.
 sf_names_list = salesforce_df["Cleaned Name"].dropna().unique()
-outcome_tracker_df[["Matched Name (Fuzzy)", "Match Score"]] = outcome_tracker_df.apply(
+outcome_tracker_df[["Matched Name", "Match Score"]] = outcome_tracker_df.apply(
     lambda row: find_best_match(row["Full Name Last First Mdl"], sf_names_list), axis = 1, result_type = "expand"
 )
 
@@ -41,14 +41,12 @@ outcome_tracker_df[["Matched Name (Fuzzy)", "Match Score"]] = outcome_tracker_df
 print("Searching through emails...")
 
 # Matching email to names
-empty_emails = ["xxxx@yahoo.com", "xxxx@gmail.com"]
+empty_emails = ["xxxx@yahoo.com", "xxxx@gmail.com", ""]
 sf_email_available = salesforce_df[~salesforce_df["Cleaned Email"].isin(empty_emails)]
-sf_email_available = sf_email_available[sf_email_available["Cleaned Email"] != ""]
-sf_email_to_name = sf_email_available.drop_duplicates(subset=["Cleaned Email"]).set_index("Cleaned Email")["Cleaned Name"]
-outcome_tracker_df["Matched Name (Email)"] = outcome_tracker_df["Cleaned Email"].map(sf_email_to_name)
-
-# Combines the email and fuzzy matches.
-outcome_tracker_df["Matched Name"] = outcome_tracker_df["Matched Name (Email)"].fillna(outcome_tracker_df["Matched Name (Fuzzy)"])
+sf_email_to_name = sf_email_available.dropna(subset=["Cleaned Email"]).drop_duplicates(subset=["Cleaned Email"]).set_index("Cleaned Email")["Cleaned Name"]
+email_matches = outcome_tracker_df["Cleaned Email"].map(sf_email_to_name)
+outcome_tracker_df["Matched Name"] = outcome_tracker_df["Matched Name"].fillna(email_matches)
+# or: outcome_tracker_df["Matched Name"].update(email_matches)
 
 # Export
 print("Exporting...")
@@ -63,6 +61,6 @@ matched_df['SF ID'] = matched_df['Matched Name'].map(sf_name_to_id)
 matched_df['SF Contact Email'] = matched_df['Matched Name'].map(sf_name_to_email)
 
 # Export the file.
-matched_df.to_csv("Matched Data.csv", index = False)
+matched_df.to_csv("Matched Data.csv (90 Email Set).csv", index = False)
 print("Exported! Yay!")
 

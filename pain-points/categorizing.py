@@ -1,5 +1,25 @@
 import pandas as pd
 
+"""
+Maura would send her consultees a form to fill out 
+before their sessions. There are two fields that asks about what 
+things they want to fix and what challenges they are facing.
+
+I was given the task of reporting some of Maura's most common client 
+issues and pain points on their business journey.
+
+Some difficulties was first deciding the categories that I want to 
+divide the clients into. For this, I settled into six differentiable 
+categories that I think requires different form of help as Maura is 
+responsible for advising webinars for entrepreneurs. These categories 
+are shown in the final report to Maura.
+
+I then sort these clients using a keyword search system, where clients 
+would then be sorted into none (if they are not struggling) or multiple 
+category of issue that they are suffering from with keywords approved 
+by Maura, who has more personal experiences dealing with many clients.
+"""
+
 # Reads the file and combines magic wand question with challenges 
 # question into a new column named "words".
 df = pd.read_excel("data.xlsx")

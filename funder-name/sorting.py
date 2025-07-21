@@ -1,5 +1,18 @@
 import pandas as pd
 
+"""
+WBDC keeps survery answers on a form on Outcome Tracker. 
+
+I was given the task of taking the field in which clients filled 
+out their source of funding for their business, and sorting each 
+individual clients by their source of funding.
+
+The difficulty is that each client fills out their form differently 
+and we want other source of funding before funding from family and 
+friends, so my solution was to use a keyword sorting loop as the 
+entries of data are only in the hundreds.
+"""
+
 # Reads the file and drops unnecessary informations.
 df = pd.read_csv("10. Economic Impact.csv")
 df = df[df.columns[3:8]]
